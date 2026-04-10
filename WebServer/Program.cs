@@ -15,13 +15,13 @@ app.Use(async (context, next) =>
 });
 
 
-app.Run();
-app.MapGet("/", () => Results.Ok(new
-{
+
+app.MapGet("/", () => Results.Ok(new {
     Message = "Welcome",
     version = "1.0",
     Time = DateTime.Now.ToString("HH:mm:ss")
 }));
+
 app.MapGet("/me", () => Results.Ok(new
 {
     Name = "Alina Shuvalova",
@@ -29,6 +29,22 @@ app.MapGet("/me", () => Results.Ok(new
     Course = 3,
     Skills = new[] { "C#", "HTML", "CSS" }
 }));
+
+app.MapGet("/calc/{a}/{b}", (double a, double b) =>
+Results.Ok(new {
+    A = a,
+    B = b,
+    Sum = a + b,
+    Diff = a - b,
+    Mul = a * b,
+    Div = b != 0 ? a / b : 0
+}));
+app.MapFallback(() => Results.NotFound(new {
+    Error = "path not found",
+    Code = 404
+}));
+
+app.Run();
 // record Product(int Id, string Name, decimal Price, bool InStock);
 //middleware
 // app.Use(async (context, next) =>
