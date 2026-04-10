@@ -1,7 +1,42 @@
-using System.Data.Common;
-
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
+//middleware
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"[LOG] {context.Request.Method} {context.Request.Path}");
+    await next(context);
+    Console.WriteLine($"[LOG] ANSWER SEND {context.Response.StatusCode}");
+});
+
+// app.Use(async (context, next) =>
+// {
+//     var key = context.Request.Query["key"];
+//     if (key != "secret")
+//     {
+//         return context.Response.StatusCode;
+//     }
+// });
+
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-powered-By", "ASP.NET Core Lab27");
+    await next(context);
+});
+
+// app.Use(async (context, next) =>
+// {
+//     Console.WriteLine($"[LOG] {context.Request.Method} {context.Request.Path}");
+//     await next(context);
+//     Console.WriteLine($"[LOG] Ответ отправлен: {context.Response.StatusCode}");
+
+// });
+
+// app.Use(async (context, next) =>
+// {
+//     context.Response.Headers.Append("X-powered=By", "ASP.NET Core lab 27");
+//     await next(context);
+// });
 //1
 app.MapGet("/", () => "welcome to server!");
 //2
@@ -37,5 +72,6 @@ app.MapGet("/product/{id}", (int id) => new Product(
     InStock: id % 2 == 0
 
 ));
+
 app.Run();
 record Product(int Id, string Name, decimal Price, bool InStock);
